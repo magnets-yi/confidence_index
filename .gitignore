@@ -1,0 +1,13 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment varialbles
+.env/
+.env.local
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+
+# Testing and coverage directories
+.pytest_cache/
