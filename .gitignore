@@ -2,12 +2,18 @@
 .DS_Store
 Thumbs.db
 
-# Environment varialbles
+# Environment varialbles & secrets
 .env/
 .env.local
 
+# Virtual environments
+.venv/
+venv/
+ENV/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
+*.pyc
 
 # Testing and coverage directories
 .pytest_cache/
