@@ -52,3 +52,12 @@
   - Install into .venv/: pytest (defined in dev group) and its transitive dependencies (from PyPI) plus the project itself (confidence-index), which is named in pyproject.toml
 - Create ./tests folder and a new file named test_smoke.py with assert (1+1==2)
 - `uv run pytest`
+
+### Commit and push
+- `git status`
+- `git add.`
+- `git status`
+- `git diff -cached`: check what will go into the commit
+- `git commit -m "..."`
+- `git status`
+- `git push -u origin learn/week01-uv`
