@@ -12,7 +12,7 @@ wheels = [
 ]
 
 [[package]]
-name = "confident-index"
+name = "confidence-index"
 version = "0.1.0"
 source = { virtual = "." }
 
