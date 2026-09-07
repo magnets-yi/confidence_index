@@ -1,0 +1,20 @@
+# The name of the workflow as it appears in GitHub's interface
+name: Continuous Integration
+
+# When should this workflow run
+on:
+  push:
+    branches: [ "master"] # filter for the branch
+  pull_requests:
+
+# What should it do
+jobs:
+  test: # job name
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v7  # find version athttps://github.com/actions/checkout; this action clones your repo onto the empty runner
+    - uses: astral-sh/setup-uv@v1  # install uv, find version at https://github.com/astral-sh/setup-uv
+      with: "lastest"
+    - run: uv sync --group dev
+    - run: uv run pytest
+

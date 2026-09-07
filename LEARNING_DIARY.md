@@ -96,5 +96,15 @@
 - Locally:
   - `git branch -D learn/week01-uv`
   - `git branch -D learn/week01-setup`
-  - `git fetch --prune`
+  - `git fetch --prune`: compares local `refs/remotes/origin/*`  refs against the remote's actual branch and deletes any local ref with no counterpart. It never deletes local branches, never changes files on disk and never removes commits made. `git fetch --prune --dry-run` preview `git fetch --prune`
   - `git branch -a`
+  - `git remote set-head origin master`: set remote HEAD to master in local file `.git/refs/remotes/origin/HEAD`
+
+  # WEEK2, DAY1
+  ## Reflect questions:
+  - Your laptop has .venv/ with pytest installed. A GitHub runner starts empty. What has to happen, in order, before pytest can run there?
+  - If CI runs uv sync from your committed uv.lock, which pytest version does it get?
+  - Who decides which Python version the runner uses — your pyproject.toml, the workflow file, or both?
+
+  ## Actions:
+  - Create `.github/workflows/ci.yml` file
