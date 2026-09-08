@@ -100,11 +100,75 @@
   - `git branch -a`
   - `git remote set-head origin master`: set remote HEAD to master in local file `.git/refs/remotes/origin/HEAD`
 
+  ### Workflow after every merged PR
+  - On GitHub, squash merge, then click Delete branch on the PR page
+  - Get off the branch and catch up `master` locally: this step not only sync local master to remote, also moves off the feature branch. As in in the next step, the feature branch cannot be deleted, if it's still the active branch
+    - `git checkout master`
+    - `git pull`
+  - Verify then delete the local feature branch:
+    - `git diff learn/week02-ci origin/master --stat'`: compare the local feature branch with remote master after squash merge. if the result is blank, it's safe to remove the local feature branch
+    - `git branch -D learn/week02-ci`
+  - Clear remote tracking refs:
+    - `git fetch --prune`: this can be made automatic by `git config --global fetch.prune true`
+  - Confirm actually in sync:
+    - `git status`
+    - `git branch -a`
+    - `git log --oneline --graph --decorate --all`: we see remote forks now
+    - `git ls-remote`: list all hashes on remote repo
+    - Delete remote featured branches as well (in Code tab)
+    - `git fetch prune`
+    - `git log --oneline --graph --decorate --all`
+
   # WEEK2, DAY1
   ## Reflect questions:
-  - Your laptop has .venv/ with pytest installed. A GitHub runner starts empty. What has to happen, in order, before pytest can run there?
-  - If CI runs uv sync from your committed uv.lock, which pytest version does it get?
-  - Who decides which Python version the runner uses — your pyproject.toml, the workflow file, or both?
+  - Your laptop has .venv/ with pytest installed. A GitHub runner starts empty. What has to happen, in order, before pytest can run there:
+    - `actions/checkout@v7` clones repo on GitHub at the triggering commit. Now `pyproject.toml`, `uv.lock` and test/ exists on runner
+    - `astral-sh/setup-uv@v10.0.1` downloads uv binary and adds it to PATH
+    - `uv sync --group dev` reads `pyproject.toml` and `uv.lock`, obtains a Python on that satisfies `>=3.12`, creates `.venv` on the runner, and installs pytest plus `colorama`, `iniconfig`, `packaging`, `pluggy`, `pygments`
+    - `uv run pytest` executes from that fresh `.venv`
+
+  - If CI runs uv sync from your committed uv.lock, which pytest version does it get:
+    - CI runs test using pytest version in `uv.lock` file if it is committed
+    - If `uv.lock` is not committed, `uv sync` would refer `pyproject.toml` file, which as `pytest>=8.0`, a declaration not a constraint. Without a committed `uv.lock`, CI can pick up different pytest version at each run time which may fail the tests
+
+  - Who decides which Python version the runner uses — your pyproject.toml, the workflow file, or both:
+    - Both can specify, but workflow file override `pyproject.toml`
+    - `uv.lock` pins every package but not the interpreter. CI doesn't reproduce laptop's environment, just a compatible one
 
   ## Actions:
-  - Create `.github/workflows/ci.yml` file
+  - Create `.github/workflows/ci.yml` file with
+    - `name:`: what appears on GitHub Actions tab
+    - `on:`: the trigger, such as `pull_request`
+    - `jobs:`: the map of job IDs, free names, such as "test"
+    - `runs-on:`: which VM, i.e., `ubuntu-latest`
+    - `steps:`: on ordered list:
+      - `uses: actions/checkout@<version>`: clones your repo onto the empty runner. For version, read README.md at https://github.com/actions/checkout
+      - `uses: astral-sh/setup-uv@<version>`: installs uv, for version, read https://github.com/astral-sh/setup-uv
+      - `run: uv sync --group dev`
+      - `run: uv run pytest`
+  - push and watch CI:
+    - `git add .`
+    - `git diff --cached`
+    - `git commit -m "learn: first CI workflow"`
+    - `git push -u origin learn/week02-ci`
+  - Open PR, go to Actions tab, and watch the job run live
+
+# WEEK2, DAY2
+## Actions:
+- Create `spec/methodology.md` file with the methodology of the index
+- Create fixture files with prices and calendar: `spec/fixtures/prices.csv` and `spec/fixtures/calendar.csv`
+- Create `spec/config.ymal` with parameters: 
+- Install a python library and a small script or `python -c` to read `spec/config.ymal`: either
+  - `uv add pyyaml`: library to convert YAML to python dictionary
+    ```
+    import yaml
+    from pathlib import Path
+
+    config = yaml.load(Path('spec/config.yaml').read_text(), Loader=yaml.FullLoader)
+    print(config)
+    ```
+  - `uv add ruamel.yaml`: library to convert YAML to python dictionary, allows code to write YMAL as well. Typical use: create a YAML() object, then .load() / .dump()
+
+- Use installed library to read `spec/config.yaml` and print the parameters: 
+  - Either using the script above in a python file
+  - Or from PowerShell: `python -c "import yaml; print(yaml.load(Path('spec/config.yaml').read_text(), Loader=yaml.FullLoader))"`

@@ -1,0 +1,6 @@
+tv: 0.10
+cost: 0.01
+day_count: 365
+base_level: 100
+inception: 2024-01-02
+first_reset: 2024-01-31
